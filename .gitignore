@@ -1,0 +1,8 @@
+.vscode
+build
+package
+*.pyc
+SimpleAmqpClient*
+conanbuildinfo.cmake
+conanbuildinfo.txt
+conaninfo.txt

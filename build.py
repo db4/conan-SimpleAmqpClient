@@ -2,7 +2,7 @@ from conan.packager import ConanMultiPackager
 import platform
 
 if __name__ == "__main__":
-    builder = ConanMultiPackager(username="dbely", args="--build missing")
+    builder = ConanMultiPackager(build_policy="missing")
     builder.visual_runtimes = ["MD", "MDd"]
     builder.add_common_builds(shared_option_name="SimpleAmqpClient:shared", pure_c=False)
 

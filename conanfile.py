@@ -11,10 +11,11 @@ class SimpleAmqpClientConan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = "shared=True", "fPIC=True"
     requires = ("rabbitmq-c/0.6.0@dbely/testing", "boost/1.66.0@conan/stable")
-    generators = "cmake"
+    generators = "cmake", "cmake_find_package"
 
     def config_options(self):
         if self.settings.os == "Windows":
+            self.options.remove("shared")
             self.options.remove("fPIC")
 
     def configure(self):
@@ -25,21 +26,26 @@ class SimpleAmqpClientConan(ConanFile):
         url = "https://github.com/alanxz/SimpleAmqpClient.git"
         self.run("git clone " + url)
         self.run("cd %s && git checkout %s" % (self.name, "6323892d3e"))
-        tools.replace_in_file("%s/CMakeLists.txt" % self.name, "PROJECT(SimpleAmqpClient)",
+        cmakelist_tst = "%s/CMakeLists.txt" % self.name
+        tools.replace_in_file(cmakelist_tst, "PROJECT(SimpleAmqpClient)",
                               """PROJECT(SimpleAmqpClient)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()""")
         os.unlink("%s/Modules/FindRabbitmqc.cmake" % self.name)
-        tools.replace_in_file("%s/CMakeLists.txt" % self.name,
+        tools.replace_in_file(cmakelist_tst,
                               "SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Modules)",
                               "list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Modules)")
+        tools.replace_in_file(cmakelist_tst, "${Rabbitmqc_SSL_ENABLED}", "ON")
+        tools.replace_in_file(cmakelist_tst, "Rabbitmqc_LIBRARY", "rabbitmq-c_LIBRARIES")
+        tools.replace_in_file(cmakelist_tst, "Rabbitmqc", "rabbitmq-c")
+        tools.replace_in_file(cmakelist_tst, "Boost", "boost")
 
     def build(self):
         cmake = CMake(self)
-        if self.options.shared:
-            cmake.definitions['BUILD_SHARED_LIBS'] = True
         if self.settings.os != "Windows":
             cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.fPIC
+        else:
+            cmake.definitions['BUILD_SHARED_LIBS'] = True
         cmake.definitions["CMAKE_INSTALL_PREFIX"] = "install"
         cmake.configure(source_folder=self.name)
         cmake.build()

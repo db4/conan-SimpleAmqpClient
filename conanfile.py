@@ -13,6 +13,10 @@ class SimpleAmqpClientConan(ConanFile):
     requires = ("rabbitmq-c/0.6.0@dbely/testing", "boost/1.66.0@conan/stable")
     generators = "cmake", "cmake_find_package"
 
+    @property
+    def src_dir(self):
+        return "%s-%s" % (self.name, self.version)
+
     def config_options(self):
         if self.settings.os == "Windows":
             self.options.remove("shared")
@@ -24,14 +28,14 @@ class SimpleAmqpClientConan(ConanFile):
 
     def source(self):
         url = "https://github.com/alanxz/SimpleAmqpClient.git"
-        self.run("git clone " + url)
-        self.run("cd %s && git checkout %s" % (self.name, "6323892d3e"))
-        cmakelist_tst = "%s/CMakeLists.txt" % self.name
+        self.run("git clone %s %s" % (url, self.src_dir))
+        self.run("cd %s && git checkout %s" % (self.src_dir, "6323892d3e"))
+        cmakelist_tst = os.path.join(self.src_dir, "CMakeLists.txt")
         tools.replace_in_file(cmakelist_tst, "PROJECT(SimpleAmqpClient)",
                               """PROJECT(SimpleAmqpClient)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()""")
-        os.unlink("%s/Modules/FindRabbitmqc.cmake" % self.name)
+        os.unlink("%s/Modules/FindRabbitmqc.cmake" % self.src_dir)
         tools.replace_in_file(cmakelist_tst,
                               "SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Modules)",
                               "list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Modules)")
@@ -47,7 +51,7 @@ conan_basic_setup()""")
         else:
             cmake.definitions['BUILD_SHARED_LIBS'] = True
         cmake.definitions["CMAKE_INSTALL_PREFIX"] = "install"
-        cmake.configure(source_folder=self.name)
+        cmake.configure(source_folder=self.src_dir)
         cmake.build()
         cmake.install()
 

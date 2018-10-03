@@ -4,7 +4,7 @@ import os
 
 class SimpleAmqpClientConan(ConanFile):
     name = "SimpleAmqpClient"
-    version = "2.5.0-pre1"
+    version = "2.4.0"
     license = "MIT"
     description = "SimpleAmqpClient is an easy-to-use C++ wrapper around the rabbitmq-c C library"
     settings = "os", "compiler", "build_type", "arch"
@@ -27,9 +27,8 @@ class SimpleAmqpClientConan(ConanFile):
             self.options["boost"].fPIC = True
 
     def source(self):
-        url = "https://github.com/alanxz/SimpleAmqpClient.git"
-        self.run("git clone %s %s" % (url, self.src_dir))
-        self.run("cd %s && git checkout %s" % (self.src_dir, "6323892d3e"))
+        tools.get("https://codeload.github.com/alanxz/SimpleAmqpClient/zip/v%s" % self.version,
+                  sha1="931e2aa78fc011f8d1ea312541df75b1d5edd559")
         cmakelist_tst = os.path.join(self.src_dir, "CMakeLists.txt")
         tools.replace_in_file(cmakelist_tst, "PROJECT(SimpleAmqpClient)",
                               """PROJECT(SimpleAmqpClient)

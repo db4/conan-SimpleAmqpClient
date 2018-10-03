@@ -1,6 +1,5 @@
 env:
    global:
-     - CONAN_REFERENCE: "SimpleAmqpClient/2.5.0-pre1"
      - CONAN_USERNAME: "dbely"
      - CONAN_LOGIN_USERNAME: "dbely"
      - CONAN_CHANNEL: "testing"

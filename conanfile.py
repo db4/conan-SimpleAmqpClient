@@ -10,7 +10,7 @@ class SimpleAmqpClientConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = "shared=True", "fPIC=True"
-    requires = ("rabbitmq-c/0.6.0@dbely/testing", "boost/1.66.0@conan/stable")
+    requires = ("rabbitmq-c/0.6.0@dbely/testing", "boost/[>=1.66.0]@conan/stable")
     generators = "cmake", "cmake_find_package"
 
     @property

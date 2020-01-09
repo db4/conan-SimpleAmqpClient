@@ -20,14 +20,14 @@ Download conan client from [Conan.io](https://conan.io) and run:
 
 ### Basic setup
 
-    $ conan install conan-SimpleAmqpClient/2.5.0-pre1@dbely/stable
+    $ conan install conan-SimpleAmqpClient/2.5.0-pre2@dbely/stable
 
 ### Project setup
 
 If you handle multiple dependencies in your project, it would be better to add a *conanfile.txt*
 
     [requires]
-    conan-SimpleAmqpClient/2.5.0-pre1@dbely/stable
+    conan-SimpleAmqpClient/2.5.0-pre2@dbely/stable
 
     [generators]
     txt
